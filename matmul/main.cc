@@ -230,15 +230,15 @@ int main(int argc, char **argv) {
   init_matrix(B, KDIM, NDIM);
   init_matrix(C, MDIM, NDIM);
 
-// TODO: May be this way cuMemHostRegister problem can be solved, 
+// TODO: May be this way cuMemHostRegister problem can be solved,
 // but in this case, we need to move gpu.host_register outside of the
-// loop. 
+// loop.
 // #if defined(MLIR_CUDA)
 //   float *DA, *DB, *DC;
 //   cudaMalloc((void **)&DA, MDIM * KDIM * sizeof(float));
 //   cudaMalloc((void **)&DB, MDIM * KDIM * sizeof(float));
 //   cudaMalloc((void **)&DC, MDIM * KDIM * sizeof(float));
-// 
+//
 //   cudaMemcpy(DA, A, MDIM * KDIM * sizeof(float), cudaMemcpyHostToDevice);
 //   cudaMemcpy(DB, B, MDIM * KDIM * sizeof(float), cudaMemcpyHostToDevice);
 //   cudaMemcpy(DC, C, MDIM * KDIM * sizeof(float), cudaMemcpyHostToDevice);
@@ -354,7 +354,7 @@ int main(int argc, char **argv) {
 #endif
 
 // TODO: Similar attempt to solve host register problem.
-// #elif defined(MLIR_CUDA) 
+// #elif defined(MLIR_CUDA)
 // #ifdef COLUMN_MAJOR
 //     matmul(DA, DA, 0, MDIM, KDIM, 1, LDA,
 //            DB, DB, 0, KDIM, NDIM, 1, LDB,
