@@ -26,20 +26,20 @@ Note: 8GB Mac Mini runs roughly 25% slower than the 16GB version on other tests.
 ### Installation
 First checkout the repo with submodules
 
-```
+```bash
 git clone --recurse-submodules https://github.com/mmperf/mmperf.git
 ```
 
 To build the code, run
 
-```
+```bash
 cmake -GNinja -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_C_COMPILER=clang-11 -DUSE_MLIR=ON -B build .
 cmake --build build
 ```
 
 Another example to build with all backends. Assumes you have MKL, OpenBLAS and Halide installed (see below to install)
 
-```
+```bash
 cmake -GNinja \
     -DCMAKE_CXX_COMPILER=clang++-11 \
     -DCMAKE_C_COMPILER=clang-11 \
@@ -51,9 +51,16 @@ cmake -GNinja \
 cmake --build build
 ```
 
-Another example could be that you don't want to fetch and compile the source for `llvm` in the `external` folder, since you might already have your own compiled `llvm` distribution. In that case, if you want to compile the code with your `llvm`, then the command will look like below
+To plot the results, you will need to install matplotlib.
 
+```bash
+pip install matplotlib
 ```
+
+#### Building with a standalone `llvm`
+The building of submodule `external/llvm-project` can be space and time consuming. If you already have your own standalone `llvm` and don't want to fetch and compile this submodule, you scan specify the `llvm` on your system with `LLVM_DIR` compilation flag:
+
+```bash
 cmake -GNinja \
     -DCMAKE_CXX_COMPILER=clang++-11 \
     -DCMAKE_C_COMPILER=clang-11 \
@@ -64,13 +71,7 @@ cmake -GNinja \
 cmake --build build
 ```
 
-To plot the results, you will need to install matplotlib.
-
-```
-pip install matplotlib
-```
-
-If you want to compile the code with `llvm`, you might need these:
+To compile `llvm` from scratch, you might want all of these as well:
 
 ```bash
 echo "deb http://apt.llvm.org/DISTRO_NAME/ llvm-toolchain-DISTRO_NAME main" >> /etc/apt/sources.list
@@ -89,7 +90,7 @@ apt-get install -y clang-11 clang-tools-11 libc++1-11 libc++-11-dev \
 We use AOT compilation to generate the binaries for matrix multiplication
 and then run them to generate the benchmarking numbers. To run all the tests, do
 
-```
+```bash
 cmake --build build/matmul --target run_all_tests
 ```
 
@@ -97,14 +98,14 @@ The plot will be saved in matmul.png
 
 To run a specific matrix size (say 24x64x512), run
 
-```
+```bash
 ./build/matmul/matmul_<LIBRARY>_24x64x512
 ```
 
 ### Installing optional dependencies: Halide, OpenBLAS, MKL
 
 #### Halide
-```
+```bash
  git clone https://github.com/halide/Halide.git --recurse-submodules
  cd Halide/
  sudo apt install libclang-11-dev clang-11 liblld-11-dev
@@ -115,12 +116,12 @@ To run a specific matrix size (say 24x64x512), run
 ```
 
 #### OpenBLAS
-```
+```bash
 sudo apt install libopenblas-dev
 ```
 
 ### BLIS
-```
+```bash
 git clone https://github.com/flame/blis
 cd blis
 ./configure --prefix=/home/foo/lokal/ --enable-cblas -c amd64
@@ -137,7 +138,4 @@ The linalg codegen pass is in matmul/matmul-compile/matmul-compile.cpp.
 
 ### Theoretical Max FLOPS 
 
-This benchmark was run on an Intel Xeon CPU running at 3.1GHz. The machine has 256Kb L1 cache, 8Mb L2 cache and 24.8Mb L3 cache.
-It supports AVX-512 instructions. The peak performance of the machine is 3.1 x 8 x 2 x 2 = 99.2 GFLOPS for double precision
-and 198.4 GFLOPS for single precision.
-
+This benchmark was run on an Intel Xeon CPU running at 3.1GHz. The machine has 256Kb L1 cache, 8Mb L2 cache and 24.8Mb L3 cache. It supports AVX-512 instructions. The peak performance of the machine is 3.1 x 8 x 2 x 2 = 99.2 GFLOPS for double precision and 198.4 GFLOPS for single precision.
