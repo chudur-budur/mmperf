@@ -24,34 +24,38 @@ Note: 8GB Mac Mini runs roughly 25% slower than the 16GB version on other tests.
 ![Results](https://github.com/mmperf/mmperf/raw/main/official_results/apple-a13/2021-01-26_15-39-08/matmul.png)
 
 ### Installation
-First checkout the repo with submodules
+Clone the repo along with submodules.
 
 ```bash
 git clone --recurse-submodules https://github.com/mmperf/mmperf.git
 ```
 
-To build the code, run
+Build the project specifying the backend(s) to run matmul. Below is a command to build mmperf with MLIR backend.
 
 ```bash
 cmake -GNinja -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_C_COMPILER=clang-11 -DUSE_MLIR=ON -B build .
 cmake --build build
 ```
 
-Another example to build with all backends. Assumes you have MKL, OpenBLAS and Halide installed (see below to install)
+Another example to build with all available backends. Assumes you have MKL, OpenBLAS, and Halide installed (see below for installation details)
 
 ```bash
-cmake -GNinja \
+HALIDE_DIR=/home/foo/lokal/halide/ MKL_DIR=/opt/intel/oneapi/mkl/latest/ cmake -GNinja \
     -DCMAKE_CXX_COMPILER=clang++-11 \
     -DCMAKE_C_COMPILER=clang-11 \
-    -DMKL_DIR=/home/foo/lokal/intel/oneapi/mkl/latest/ \
-    -DHAILE_DIR=/home/foo/lokal/halide \
-    -DUSE_MLIR=ON -DUSE_MKL=ON -DUSE_RUY=ON -DUSE_HALIDE=ON -DUSE_OPENBLAS=ON \
+    -DMKL_DIR=/opt/intel/oneapi/mkl/latest/ \
+    -DUSE_MLIR=ON \
+    -DUSE_MKL=ON \
+    -DUSE_RUY=ON \
+    -DUSE_HALIDE=ON \
+    -DUSE_OPENBLAS=ON \
+    -DUSE_IREE=ON \
     -B build .
 
 cmake --build build
 ```
 
-To plot the results, you will need to install matplotlib.
+Install `matplotlib` to generate performance plot.
 
 ```bash
 pip install matplotlib
@@ -87,32 +91,41 @@ apt-get install -y clang-11 clang-tools-11 libc++1-11 libc++-11-dev \
 
 ### Running the code
 
-We use AOT compilation to generate the binaries for matrix multiplication
-and then run them to generate the benchmarking numbers. To run all the tests, do
+We use AOT compilation to generate binaries for matrix multiplication for specified backends
+and run them to generate the benchmarking numbers. To run all tests and generate performance numbers run: 
 
 ```bash
 cmake --build build/matmul --target run_all_tests
 ```
 
-The plot will be saved in matmul.png 
+`results` folder will be created in the mmperf top-level directory which will contain GLOPS for every matmul size and every backend. A plot comparing performances of backends will also be generated in `matmul.png`.  
 
-To run a specific matrix size (say 24x64x512), run
+Each generated binary can also be executed individually. To run a specific matrix size (say 24x64x512) for a backend run:
 
 ```bash
 ./build/matmul/matmul_<LIBRARY>_24x64x512
 ```
 
+### Program configuration
+
+Matrix sizes: `benchmark_sizes` folder has text files containing the matrix sizes that mmperf runs on. You can change the matrix size input file by editing `SIZE_FILE` option in `cmake/common.cmake`. Default is `benchmark_all_sizes.txt`.
+
+Number of iterations: The number of iterations for a matmul to be benchmarked can be set by changing NUM_REPS variable in `cmake/common.cmake`. Default is 100.
+
 ### Installing optional dependencies: Halide, OpenBLAS, MKL
 
 #### Halide
 ```bash
- git clone https://github.com/halide/Halide.git --recurse-submodules
- cd Halide/
- sudo apt install libclang-11-dev clang-11 liblld-11-dev
- LLD_DIR=/usr/lib/llvm-11/lib/cmake/lld cmake . -GNinja -DCMAKE_BUILD_TYPE=Release -DTARGET_WEBASSEMBLY=OFF -DCMAKE_INSTALL_PREFIX=/home/<foo>/lokal/
- ninja
- ninja install
- export HALIDE_DIR=/home/<foo>/lokal/halide
+git clone https://github.com/halide/Halide.git --recurse-submodules
+cd Halide/
+sudo apt install libclang-11-dev clang-11 liblld-11-dev
+LLD_DIR=/usr/lib/llvm-11/lib/cmake/lld cmake . -GNinja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DTARGET_WEBASSEMBLY=OFF \
+    -DCMAKE_INSTALL_PREFIX=/home/<foo>/lokal/
+ninja
+ninja install
+export HALIDE_DIR=/home/<foo>/lokal/halide
 ```
 
 #### OpenBLAS
@@ -139,3 +152,4 @@ The linalg codegen pass is in matmul/matmul-compile/matmul-compile.cpp.
 ### Theoretical Max FLOPS 
 
 This benchmark was run on an Intel Xeon CPU running at 3.1GHz. The machine has 256Kb L1 cache, 8Mb L2 cache and 24.8Mb L3 cache. It supports AVX-512 instructions. The peak performance of the machine is 3.1 x 8 x 2 x 2 = 99.2 GFLOPS for double precision and 198.4 GFLOPS for single precision.
+
