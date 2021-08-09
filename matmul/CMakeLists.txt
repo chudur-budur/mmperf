@@ -161,7 +161,7 @@ if(${USE_CUBLAS} STREQUAL "ON")
 endif()
 
 # Number of times to repeat the test
-set(NUM_REPS 100)
+set(NUM_REPS ${NUM_REPS})
 
 set(BACKENDS "")
 if(SEARCH_MODE)
