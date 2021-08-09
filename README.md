@@ -33,7 +33,12 @@ git clone --recurse-submodules https://github.com/mmperf/mmperf.git
 Build the project specifying the backend(s) to run matmul. Below is a command to build mmperf with MLIR backend.
 
 ```bash
-cmake -GNinja -DCMAKE_CXX_COMPILER=clang++-11 -DCMAKE_C_COMPILER=clang-11 -DUSE_MLIR=ON -B build .
+cmake -GNinja \
+    -DCMAKE_CXX_COMPILER=clang++-11 \
+    -DCMAKE_C_COMPILER=clang-11 \
+    -DUSE_MLIR=ON \
+    -B build .
+
 cmake --build build
 ```
 
@@ -149,7 +154,7 @@ Download and install from https://software.intel.com/content/www/us/en/develop/a
 
 The linalg codegen pass is in matmul/matmul-compile/matmul-compile.cpp.
 
-### Theoretical Max FLOPS 
+### Theoretical Max FLOPS
 
 This benchmark was run on an Intel Xeon CPU running at 3.1GHz. The machine has 256Kb L1 cache, 8Mb L2 cache and 24.8Mb L3 cache. It supports AVX-512 instructions. The peak performance of the machine is 3.1 x 8 x 2 x 2 = 99.2 GFLOPS for double precision and 198.4 GFLOPS for single precision.
 
