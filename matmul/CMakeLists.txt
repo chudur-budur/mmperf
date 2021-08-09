@@ -115,14 +115,14 @@ if(USE_MLIR OR USE_NODAI OR USE_MLIR_CUDA)
       endif()
       if(mlircuda_mode)
         add_custom_command(
-          OUTPUT ${OBJ} 
+          OUTPUT ${OBJ}
           COMMAND cat ${CMAKE_BINARY_DIR}/mlir-objs/${mlir_prefix}.mlir |
-          ${MLIR_OPT} --linalg-tile-to-parallel-loops=\"linalg-tile-sizes=${TILE_SIZES_LOCAL}\" | 
+          ${MLIR_OPT} --linalg-tile-to-parallel-loops=\"linalg-tile-sizes=${TILE_SIZES_LOCAL}\" |
           ${MLIR_OPT} --convert-linalg-to-parallel-loops --test-gpu-greedy-parallel-loop-mapping |
           ${MLIR_OPT} --convert-parallel-loops-to-gpu --gpu-kernel-outlining --lower-affine |
-          ${MLIR_OPT} --convert-scf-to-std --canonicalize | 
-          ${MLIR_OPT} --pass-pipeline=\"gpu.module\(strip-debuginfo, convert-gpu-to-nvvm, gpu-to-cubin\)\" --gpu-to-llvm | 
-          ${MLIR_TRANSLATE} --mlir-to-llvmir | opt -O3 -S | llc -O3 | as - -o ${OBJ} 
+          ${MLIR_OPT} --convert-scf-to-std --canonicalize |
+          ${MLIR_OPT} --pass-pipeline=\"gpu.module\(strip-debuginfo, convert-gpu-to-nvvm, gpu-to-cubin\)\" --gpu-to-llvm |
+          ${MLIR_TRANSLATE} --mlir-to-llvmir | opt -O3 -S | llc -O3 | as - -o ${OBJ}
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/mlir-objs)
       else()
         add_custom_command(OUTPUT ${OBJ}
