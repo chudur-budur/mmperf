@@ -79,7 +79,7 @@ To compile `llvm` from scratch, you might want all of these as well:
 
 ```bash
 echo "deb http://apt.llvm.org/DISTRO_NAME/ llvm-toolchain-DISTRO_NAME main" >> /etc/apt/sources.list
-wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 apt-get update && apt-get upgrade -y
 apt-get install -y clang-11 clang-tools-11 libc++1-11 libc++-11-dev \
     libc++abi1-11 libc++abi-11-dev libclang1-11 libclang-11-dev \
