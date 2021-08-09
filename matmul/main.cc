@@ -338,10 +338,8 @@ int main(int argc, char **argv) {
     blas_sgemm(&c_t, &c_t, &m0, &n0, &k0, &alpha, A, &LDA, B, &LDB, &beta, C, &LDC);
 #elif defined(RUY)
     ruy::Mul(lhs, rhs, mul_params, &context, &dst);
-
 #elif defined(TVM)
     matmul(x, y, z);
-
 #elif defined(MLIR) || defined(MLIR_CUDA)
 #ifdef COLUMN_MAJOR
     matmul(A, A, 0, MDIM, KDIM, 1, LDA,
